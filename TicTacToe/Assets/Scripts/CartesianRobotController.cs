@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CartesianRobotController : MonoBehaviour
 {
+    public GameController gameController;
     public GameObject arm, top, balls, ballDropPoint;
 
     int spaceX, spaceY;
@@ -19,6 +20,11 @@ public class CartesianRobotController : MonoBehaviour
     float animationProgress = 0.0f;
     float animationDuration = 0.0f;
     int movementType;
+    // 0 -  
+    // 1 -  Get Ball to Play
+    // 2 -  Move to Drop on board space
+    // 3 -  Get Ball to reset
+    // 4 -  Drop Ball to reset
     float scaleFactor = 5.4f;
 
     // Balls Information
@@ -26,7 +32,8 @@ public class CartesianRobotController : MonoBehaviour
     int[] ballUsed;
     int selectedBall;
 
-    void Start()
+    // Initialization
+    void Awake()
     {
         ballUsed = new int[2];
         x = transform.position.x;
@@ -39,11 +46,14 @@ public class CartesianRobotController : MonoBehaviour
                 ballsStartPosition[player, ball] = balls.transform.GetChild(player * 5 + ball).transform.position;
             }
         }
-        GetBall();
     }
 
-    void GetBall()
+    // Orders
+    public void GetCircle()
     {
+        Debug.Log(Global.instance.turn-1);
+        Debug.Log(ballUsed[Global.instance.turn-1]);
+        Debug.Log(ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]]);
         movementType = 1;
         movX = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].x - x;
         movZ = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].z - z;
@@ -59,7 +69,46 @@ public class CartesianRobotController : MonoBehaviour
         movZ = pos.z - z;
         MoveZ();
     }
+        
+    public void ResetBalls()
+    {
+        animationStatus = 0;
 
+        for (int player = 0; player < 2; player++)
+        {
+            for (int ball = 0; ball < 5; ball++)
+            {
+                if(HasSamePosition(ballsStartPosition[player, ball], balls.transform.GetChild(player * 5 + ball).transform.position) == false)
+                {
+                    movementType = 3;
+                    selectedBall = player * 5 + ball;
+                    movX = balls.transform.GetChild(player * 5 + ball).transform.position.x - x;
+                    movZ = balls.transform.GetChild(player * 5 + ball).transform.position.z - z;
+                    MoveZ();
+                    return;
+                }
+            }
+        }
+
+        // Game Reseted
+        Debug.Log("Reset");
+        gameController.SetOnGameSetup();
+    }
+
+    // Helpers
+    bool HasSamePosition(Vector3 startPos, Vector3 currentPos)
+    {
+        if(startPos.x == currentPos.x && startPos.z == currentPos.z) return true;
+        return false;
+    }
+
+    public void ResetBallUsed()
+    {
+        ballUsed[0] = 0;
+        ballUsed[1] = 0;
+    }
+
+    // Arm Movement
     void MoveZ()
     {
         previousTopPosition = top.transform.position;
@@ -108,43 +157,22 @@ public class CartesianRobotController : MonoBehaviour
         ScaleDownArm();
     }
 
-    void ResetNextBall()
-    {
-        for (int player = 0; player < 2; player++)
-        {
-            for (int ball = 0; ball < 4; ball++)
-            {
-                if(ballsStartPosition[player, ball] != balls.transform.GetChild(player * 5 + ball).transform.position)
-                {
-                    movementType = 3;
-                    selectedBall = (Global.instance.turn-1) * 5 + ballUsed[Global.instance.turn-1];
-                    movX = balls.transform.GetChild(player * 5 + ball).transform.position.x - x;
-                    movZ = balls.transform.GetChild(player * 5 + ball).transform.position.z - z;
-                    MoveZ();
-                    return;
-                }
-            }
-        }
-
-        // Reset Game
-        ballUsed = new int[2];
-    }
-
     void PlaceOnDefaultPosition()
     {
+        int player = selectedBall / 5;
+        int ball = selectedBall;
+        if(selectedBall >= 5) ball = selectedBall - 5;
+        
         movementType = 4;
-        movX = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].x - x;
-        movZ = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].z - z;
+        movX = ballsStartPosition[player, ball].x - x;
+        movZ = ballsStartPosition[player, ball].z - z;
         MoveZ();
     }
 
+
+    // Update
     void FixedUpdate()
     {
-        if( Input.GetMouseButtonDown(1) )
-        {
-            ResetNextBall();
-        }
-
         if(animationStatus != 0)
         {
             animationElapsedTime += Time.deltaTime;
@@ -152,20 +180,19 @@ public class CartesianRobotController : MonoBehaviour
             if(animationProgress >= 1)
             {
                 animationProgress = 1;
-                if(animationStatus == 2)
+                if(animationStatus == 2) // MoveZ
                 {
                     top.transform.position = previousTopPosition + new Vector3(0, 0, movZ);
                     z += movZ;
                     MoveX();
                 }
-                else if(animationStatus == 3)
+                else if(animationStatus == 3) // MoveX
                 {
                     arm.transform.position = previousArmPosition + new Vector3(movX, 0, 0);
                     x += movX;
-                    if(movementType != 0) ScaleUpArm();
-                    else animationStatus = 0;
+                    ScaleUpArm();
                 }
-                else if(animationStatus == 4)
+                else if(animationStatus == 4) // ScaleUpArm
                 {
                     if(movementType == 1)
                     {
@@ -178,20 +205,28 @@ public class CartesianRobotController : MonoBehaviour
                     }
                     else if(movementType == 3)
                     {
-                        selectedBall = (Global.instance.turn-1) * 5 + ballUsed[Global.instance.turn-1];
                         CatchBall();
                     }
                 }
-                else if(animationStatus == 5)
+                else if(animationStatus == 5) // ScaleDownArm
                 {
                     if(movementType == 1)
                     {
                         animationStatus = 0;
+                        gameController.SetOnIdle();
                     }
                     else if(movementType == 2)
                     {
-                        EndOfTurn();
-                        GetBall();
+                        Global.instance.EndOfTurn(spaceX, spaceY);
+                        if(gameController.IsWin() == false)
+                        {
+                            gameController.SetOnGameSetup();
+                        }
+                        else
+                        {
+                            animationStatus = 0;
+                            gameController.SetOnWin();
+                        }
                     }
                     else if(movementType == 3)
                     {
@@ -199,7 +234,7 @@ public class CartesianRobotController : MonoBehaviour
                     }
                     else if(movementType == 4)
                     {
-                        ResetNextBall();
+                        ResetBalls();
                     }
                 }
             }
@@ -222,9 +257,4 @@ public class CartesianRobotController : MonoBehaviour
         }
     }
 
-    void EndOfTurn()
-    {
-        animationStatus = 0;
-        Global.instance.EndOfTurn(spaceX, spaceY);
-    }
 }

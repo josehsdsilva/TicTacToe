@@ -33,6 +33,6 @@ public class Global : MonoBehaviour
         board[_x, _y] = turn;
         turn++;
         if(turn >= 3) turn = 1;
-        Debug.Log("Player " + turn + " turn!");
     }
+
 }
