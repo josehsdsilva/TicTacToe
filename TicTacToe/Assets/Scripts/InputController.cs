@@ -22,7 +22,7 @@ public class InputController : MonoBehaviour
             {
                 if(hit.transform.gameObject.layer == 6)
                 {
-                    gameController.Play(hit.transform.GetComponent<Space>().x, hit.transform.GetComponent<Space>().y);
+                    gameController.Play(hit.transform.GetComponent<Space>().x, hit.transform.GetComponent<Space>().y, hit.transform.position);
                 }
             }
         }

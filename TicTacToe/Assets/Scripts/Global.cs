@@ -21,6 +21,12 @@ public class Global : MonoBehaviour
     public int[,] board = new int[3,3];
     public int turn = 1;
 
+    void Start()
+    {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 1000;
+    }
+
 
     public void EndOfTurn(int _x, int _y)
     {

@@ -6,11 +6,11 @@ public class GameController : MonoBehaviour
 {
     public CartesianRobotController cartesianRobotController;
 
-    public void Play(int _x, int _y)
+    public void Play(int _x, int _y, Vector3 pos)
     {
-        if(Global.instance.board[_x, _y] == 0)
+        if(Global.instance.board[_x, _y] == 0 && cartesianRobotController.animationStatus == 0)
         {
-            cartesianRobotController.Move(_x, _y);
+            cartesianRobotController.Move(_x, _y, pos);
         }
         else Debug.Log("Invalid Play");
     }
