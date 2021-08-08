@@ -25,6 +25,7 @@ public class CartesianRobotController : MonoBehaviour
     // 2 -  Move to Drop on board space
     // 3 -  Get Ball to reset
     // 4 -  Drop Ball to reset
+    
     float scaleFactor = 5.4f;
 
     // Balls Information
@@ -51,9 +52,6 @@ public class CartesianRobotController : MonoBehaviour
     // Orders
     public void GetCircle()
     {
-        Debug.Log(Global.instance.turn-1);
-        Debug.Log(ballUsed[Global.instance.turn-1]);
-        Debug.Log(ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]]);
         movementType = 1;
         movX = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].x - x;
         movZ = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].z - z;
@@ -78,7 +76,7 @@ public class CartesianRobotController : MonoBehaviour
         {
             for (int ball = 0; ball < 5; ball++)
             {
-                if(HasSamePosition(ballsStartPosition[player, ball], balls.transform.GetChild(player * 5 + ball).transform.position) == false)
+                if(!HasSamePosition(ballsStartPosition[player, ball], balls.transform.GetChild(player * 5 + ball).transform.position))
                 {
                     movementType = 3;
                     selectedBall = player * 5 + ball;
@@ -98,8 +96,17 @@ public class CartesianRobotController : MonoBehaviour
     // Helpers
     bool HasSamePosition(Vector3 startPos, Vector3 currentPos)
     {
-        if(startPos.x == currentPos.x && startPos.z == currentPos.z) return true;
+        float startX = RoundWith2Decimals(startPos.x);
+        float startZ = RoundWith2Decimals(startPos.z);
+        float currentX = RoundWith2Decimals(currentPos.x);
+        float currentZ = RoundWith2Decimals(currentPos.z);
+        if( startX == currentX && startZ == currentZ) return true;
         return false;
+    }
+
+    float RoundWith2Decimals(float number)
+    {
+        return Mathf.Round(number * 100) * 0.01f;
     }
 
     public void ResetBallUsed()
@@ -153,7 +160,7 @@ public class CartesianRobotController : MonoBehaviour
     {
         balls.transform.GetChild(selectedBall).transform.position = ballDropPoint.transform.position;
         balls.transform.GetChild(selectedBall).gameObject.SetActive(true);
-        ballUsed[Global.instance.turn-1]++;
+        if(movementType == 2) ballUsed[Global.instance.turn-1]++;
         ScaleDownArm();
     }
 
