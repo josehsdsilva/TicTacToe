@@ -84,7 +84,8 @@ public class GameController : MonoBehaviour
         cartesianRobotController.ResetBallUsed();
         Global.instance.board = new int[3,3];
         Global.instance.turn = 1;
-        cartesianRobotController.ResetBalls();
+        cartesianRobotController.UpdateResetedCircles();
+        cartesianRobotController.ResetCircles();
     }
 
     // Update

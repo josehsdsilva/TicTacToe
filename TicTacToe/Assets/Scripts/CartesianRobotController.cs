@@ -20,12 +20,17 @@ public class CartesianRobotController : MonoBehaviour
     float animationProgress = 0.0f;
     float animationDuration = 0.0f;
     int movementType;
+
+    private  float startX, startZ, currentX, currentZ;
+
+    bool[,] resetedCircles = new bool[2, 5];
+
     // 0 -  
     // 1 -  Get Ball to Play
     // 2 -  Move to Drop on board space
     // 3 -  Get Ball to reset
     // 4 -  Drop Ball to reset
-    
+
     float scaleFactor = 5.4f;
 
     // Balls Information
@@ -68,7 +73,19 @@ public class CartesianRobotController : MonoBehaviour
         MoveZ();
     }
         
-    public void ResetBalls()
+    public void UpdateResetedCircles()
+    {
+        for (int player = 0; player < 2; player++)
+        {
+            for (int ball = 0; ball < 5; ball++)
+            {
+                if(HasSamePosition(ballsStartPosition[player, ball], balls.transform.GetChild(player * 5 + ball).transform.position)) resetedCircles[player, ball] = true;
+                else resetedCircles[player, ball] = false;
+            }
+        }
+    }
+
+    public void ResetCircles()
     {
         animationStatus = 0;
 
@@ -76,12 +93,13 @@ public class CartesianRobotController : MonoBehaviour
         {
             for (int ball = 0; ball < 5; ball++)
             {
-                if(!HasSamePosition(ballsStartPosition[player, ball], balls.transform.GetChild(player * 5 + ball).transform.position))
+                if(!resetedCircles[player, ball])
                 {
                     movementType = 3;
                     selectedBall = player * 5 + ball;
                     movX = balls.transform.GetChild(player * 5 + ball).transform.position.x - x;
                     movZ = balls.transform.GetChild(player * 5 + ball).transform.position.z - z;
+                    resetedCircles[player, ball] = true;
                     MoveZ();
                     return;
                 }
@@ -96,10 +114,10 @@ public class CartesianRobotController : MonoBehaviour
     // Helpers
     bool HasSamePosition(Vector3 startPos, Vector3 currentPos)
     {
-        float startX = RoundWith2Decimals(startPos.x);
-        float startZ = RoundWith2Decimals(startPos.z);
-        float currentX = RoundWith2Decimals(currentPos.x);
-        float currentZ = RoundWith2Decimals(currentPos.z);
+        startX = RoundWith2Decimals(startPos.x);
+        startZ = RoundWith2Decimals(startPos.z);
+        currentX = RoundWith2Decimals(currentPos.x);
+        currentZ = RoundWith2Decimals(currentPos.z);
         if( startX == currentX && startZ == currentZ) return true;
         return false;
     }
@@ -176,7 +194,6 @@ public class CartesianRobotController : MonoBehaviour
         MoveZ();
     }
 
-
     // Update
     void FixedUpdate()
     {
@@ -241,7 +258,7 @@ public class CartesianRobotController : MonoBehaviour
                     }
                     else if(movementType == 4)
                     {
-                        ResetBalls();
+                        ResetCircles();
                     }
                 }
             }
