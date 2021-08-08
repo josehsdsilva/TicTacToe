@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
             playerOnePlay,
             playerTwoPlay,
             Win,
+            GameOver,
             Reset
         }
 
@@ -59,10 +60,31 @@ public class GameController : MonoBehaviour
         return false;
     }
 
+    // GameOver
+    public bool IsGameOver()
+    {
+        int auxCounter = 0;
+        for (int x = 0; x < 3; x++)
+        {
+            for (int y = 0; y < 3; y++)
+            {
+                if(Global.instance.board[x, y] != 0) auxCounter++;
+            }
+        }
+        return auxCounter >= 9;
+    }
+
     // Gamestates
     public void SetOnWin()
     {
         gamestate = Gamestate.Win;
+        Debug.Log("Player " + Global.instance.turn + " Won!");
+        SetOnResetGame();
+    }
+
+    public void SetOnGameOver()
+    {
+        gamestate = Gamestate.GameOver;
         Debug.Log("Player " + Global.instance.turn + " Won!");
         SetOnResetGame();
     }

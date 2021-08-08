@@ -244,7 +244,12 @@ public class CartesianRobotController : MonoBehaviour
                         Global.instance.EndOfTurn(spaceX, spaceY);
                         if(gameController.IsWin() == false)
                         {
-                            gameController.SetOnGameSetup();
+                            if(gameController.IsGameOver() == false) gameController.SetOnGameSetup();
+                            else 
+                            {
+                                animationStatus = 0;
+                                gameController.SetOnGameOver();
+                            }
                         }
                         else
                         {
