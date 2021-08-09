@@ -248,6 +248,7 @@ public class CartesianRobotController : MonoBehaviour
                     {
                         GameController.instance.EndOfTurn(spaceX, spaceY);
                         win = GameController.instance.CheckWin(GameController.instance.board);
+                        GameController.instance.SetWinMessageState(win);
                         if( win != null)
                         {
                             animationStatus = 0;

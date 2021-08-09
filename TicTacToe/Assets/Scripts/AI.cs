@@ -15,7 +15,7 @@ public class AI : MonoBehaviour
                 if(GameController.instance.board[x, y] == 0) 
                 {
                     GameController.instance.board[x, y] = GameController.instance.aiPlayerTurn;
-                    score = Minimax(GameController.instance.board, 0, -1000, 1000, false);
+                    score = Minimax(GameController.instance.board, PlayerPrefs.GetInt("difficulty"), -1000, 1000, false);
                     GameController.instance.board[x, y] = 0;
                     if(score > bestScore)
                     {

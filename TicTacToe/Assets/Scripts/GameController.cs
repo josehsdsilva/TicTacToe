@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -37,11 +38,17 @@ public class GameController : MonoBehaviour
     public AI AIPlayer;
     Gamestate gamestate;
 
+    [SerializeField] Image currentTurnImage, humanTurnImage;
+
     public int[,] board = new int[3,3];
 
     public int turn = 1;
 
     public int humanPlayerTurn = 1, aiPlayerTurn = 2;
+
+    [SerializeField] Color yellow = new Color();
+    [SerializeField] Color orange = new Color();
+    [SerializeField] GameObject[] winMessages;
 
     // Initialization
     void Start()
@@ -53,6 +60,7 @@ public class GameController : MonoBehaviour
 
     public void CatchCircle()
     {
+        SetWinMessageState(null);
         cartesianRobotController.GetCircle();
     }
 
@@ -61,6 +69,8 @@ public class GameController : MonoBehaviour
         humanPlayerTurn = Random.Range(1, 3);
         if(humanPlayerTurn == 1) aiPlayerTurn = 2;
         else aiPlayerTurn = 1;
+        UpdateHumanColor();
+        UpdateTurnColor();
     }
 
     // Human Play
@@ -93,6 +103,31 @@ public class GameController : MonoBehaviour
         board[_x, _y] = turn;
         turn++;
         if(turn >= 3) turn = 1;
+        UpdateTurnColor();
+    }
+
+    void UpdateTurnColor()
+    {
+        if(turn == 1) 
+        {
+            currentTurnImage.color = orange;
+        }
+        else if(turn == 2) 
+        {
+            currentTurnImage.color = yellow;
+        }
+    }
+
+    void UpdateHumanColor()
+    {
+        if(humanPlayerTurn == 1) 
+        {
+            humanTurnImage.color = orange;
+        }
+        else if(humanPlayerTurn == 2) 
+        {
+            humanTurnImage.color = yellow;
+        }
     }
 
     // Win
@@ -137,6 +172,31 @@ public class GameController : MonoBehaviour
             }
         }
         return auxCounter >= 9;
+    }
+
+    // End Game messages
+    public void SetWinMessageState(string win)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            winMessages[i].gameObject.SetActive(false);
+        }
+        if(win != null)
+        {
+            winMessages[3].gameObject.SetActive(true);
+            if(win == "0")
+            {
+                winMessages[0].gameObject.SetActive(true);
+            }
+            else if(turn == aiPlayerTurn)
+            {
+                winMessages[1].gameObject.SetActive(true);
+            }
+            if(turn == humanPlayerTurn)
+            {
+                winMessages[2].gameObject.SetActive(true);
+            }
+        }
     }
 
     // Gamestates
