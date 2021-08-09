@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class CartesianRobotController : MonoBehaviour
 {
-    public GameController gameController;
     public GameObject arm, top, balls, ballDropPoint;
 
     int spaceX, spaceY;
     float x = 1, z = 1, movX, movZ;
     Vector3 previousArmPosition, previousTopPosition;
 
+    // Arm Movement
+    private  float startX, startZ, currentX, currentZ;
+    float spaceDistance = 1.1f;
+    float scaleFactor = 5.4f;
+    
     // Animation Control
     [Range(0.1f, 1f)]
     [SerializeField] float defaultAnimDuration = 0.1f;
@@ -25,17 +29,14 @@ public class CartesianRobotController : MonoBehaviour
     // 3 -  Get Ball to reset
     // 4 -  Drop Ball to reset
 
-    private  float startX, startZ, currentX, currentZ;
-
     bool[,] resetedCircles = new bool[2, 5];
 
-    float spaceDistance = 1.1f;
-    float scaleFactor = 5.4f;
 
     // Balls Information
     Vector3[,] ballsStartPosition;
     int[] usedCircle;
     int selectedBall;
+    string win;
 
     // Initialization
     void Awake()
@@ -57,8 +58,8 @@ public class CartesianRobotController : MonoBehaviour
     public void GetCircle()
     {
         movementType = 1;
-        movX = ballsStartPosition[gameController.turn-1, usedCircle[gameController.turn-1]].x - x;
-        movZ = ballsStartPosition[gameController.turn-1, usedCircle[gameController.turn-1]].z - z;
+        movX = ballsStartPosition[GameController.instance.turn-1, usedCircle[GameController.instance.turn-1]].x - x;
+        movZ = ballsStartPosition[GameController.instance.turn-1, usedCircle[GameController.instance.turn-1]].z - z;
         MoveZ();
     }
 
@@ -112,8 +113,7 @@ public class CartesianRobotController : MonoBehaviour
         }
 
         // Game Reseted
-        Debug.Log("Reset");
-        gameController.ResetFinished();
+        GameController.instance.ResetFinished();
     }
 
     // Helpers
@@ -183,7 +183,7 @@ public class CartesianRobotController : MonoBehaviour
     {
         balls.transform.GetChild(selectedBall).transform.position = ballDropPoint.transform.position;
         balls.transform.GetChild(selectedBall).gameObject.SetActive(true);
-        if(movementType == 2) usedCircle[gameController.turn-1]++;
+        if(movementType == 2) usedCircle[GameController.instance.turn-1]++;
         ScaleDownArm();
     }
 
@@ -225,7 +225,7 @@ public class CartesianRobotController : MonoBehaviour
                 {
                     if(movementType == 1)
                     {
-                        selectedBall = (gameController.turn-1) * 5 + usedCircle[gameController.turn-1];
+                        selectedBall = (GameController.instance.turn-1) * 5 + usedCircle[GameController.instance.turn-1];
                         CatchBall();
                     }
                     else if(movementType == 2 || movementType == 4)
@@ -242,24 +242,21 @@ public class CartesianRobotController : MonoBehaviour
                     if(movementType == 1)
                     {
                         animationStatus = 0;
-                        gameController.SetOnIdle();
+                        GameController.instance.SetOnIdle();
                     }
                     else if(movementType == 2)
                     {
-                        gameController.EndOfTurn(spaceX, spaceY);
-                        if(gameController.IsWin() == false)
+                        GameController.instance.EndOfTurn(spaceX, spaceY);
+                        win = GameController.instance.CheckWin(GameController.instance.board);
+                        if( win != null)
                         {
-                            if(gameController.IsGameOver() == false) gameController.SetOnGameSetup();
-                            else 
-                            {
-                                animationStatus = 0;
-                                gameController.SetOnGameOver();
-                            }
+                            animationStatus = 0;
+                            if(win == "0") GameController.instance.SetOnGameOver();
+                            else GameController.instance.SetOnWin();
                         }
                         else
                         {
-                            animationStatus = 0;
-                            gameController.SetOnWin();
+                            GameController.instance.SetOnGameSetup();
                         }
                     }
                     else if(movementType == 3)

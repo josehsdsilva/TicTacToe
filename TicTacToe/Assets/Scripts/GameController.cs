@@ -5,6 +5,20 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 
+    #region Singleton
+    public static GameController instance;
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+
+        else if (instance != this)
+            Destroy(gameObject);
+
+        //DontDestroyOnLoad(gameObject);
+    }
+    #endregion
+
     #region Gamestate Enum
         public enum Gamestate
         {
@@ -20,13 +34,14 @@ public class GameController : MonoBehaviour
     #endregion
     
     public CartesianRobotController cartesianRobotController;
+    public AI AIPlayer;
     Gamestate gamestate;
 
     public int[,] board = new int[3,3];
 
     public int turn = 1;
 
-    int humanPlayerTurn = 1;
+    public int humanPlayerTurn = 1, aiPlayerTurn = 2;
 
     // Initialization
     void Start()
@@ -44,6 +59,8 @@ public class GameController : MonoBehaviour
     void RandomizeStartingPlayer()
     {
         humanPlayerTurn = Random.Range(1, 3);
+        if(humanPlayerTurn == 1) aiPlayerTurn = 2;
+        else aiPlayerTurn = 1;
     }
 
     // Human Play
@@ -60,26 +77,13 @@ public class GameController : MonoBehaviour
     // AI Play
     public void AIPlay()
     {
-        Vector2Int pos = GetRandomPlay();
-        if(gamestate == Gamestate.idle && board[pos.x, pos.y] == 0 && cartesianRobotController.animationStatus == 0 && turn != humanPlayerTurn)
+        Vector2Int pos = AIPlayer.GetAIPlay();
+        if(gamestate == Gamestate.idle && board[pos.x, pos.y] == 0 && cartesianRobotController.animationStatus == 0 && turn == aiPlayerTurn)
         {
             gamestate = Gamestate.AIPlay;
             cartesianRobotController.Move(pos.x, pos.y);
         }
         else Debug.Log("Invalid Play");
-    }
-
-    Vector2Int GetRandomPlay()
-    {
-        int auxX, auxY;
-        for (int i = 0; i < 1; i++)
-        {
-            auxX = Random.Range(0, 3);
-            auxY = Random.Range(0, 3);
-            if(board[auxX, auxY] == 0) return new Vector2Int(auxX, auxY);
-            i--;
-        }
-        return Vector2Int.zero;
     }
 
     // Turn
@@ -92,27 +96,44 @@ public class GameController : MonoBehaviour
     }
 
     // Win
-    public bool IsWin()
+    public string CheckWin(int [,] _board)
     {
         for (int aux = 0; aux < 3; aux++)
         {
-            if(board[0, aux] != 0 && board[0, aux] == board[1, aux] && board[1, aux] == board[2, aux]) return true;
-            if(board[aux, 0] != 0 && board[aux, 0] == board[aux, 1] && board[aux, 1] == board[aux, 2]) return true;
+            if(_board[0, aux] != 0 && _board[0, aux] == _board[1, aux] && _board[1, aux] == _board[2, aux])
+            {
+                if(_board[2, aux] == turn) return "1";
+                return "-1";
+            }
+            if(_board[aux, 0] != 0 && _board[aux, 0] == _board[aux, 1] && _board[aux, 1] == _board[aux, 2])
+            {
+                if(_board[aux, 2] == turn) return "1";
+                return "-1";
+            }
         }
-        if(board[0, 0] != 0 && board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2]) return true;
-        if(board[0, 2] != 0 && board[0, 2] == board[1, 1] && board[1, 1] == board[2, 0]) return true;
-        return false;
+        if(_board[0, 0] != 0 && _board[0, 0] == _board[1, 1] && _board[1, 1] == _board[2, 2])
+        {
+            if(_board[2, 2] == turn) return "1";
+            return "-1";
+        }
+        if(_board[0, 2] != 0 && _board[0, 2] == _board[1, 1] && _board[1, 1] == _board[2, 0])
+        {
+            if(_board[2, 0] == turn) return "1";
+            return "-1";
+        }
+        if(IsGameOver(board)) return "0";
+        return null;
     }
 
     // GameOver
-    public bool IsGameOver()
+    public bool IsGameOver(int[,] _board)
     {
         int auxCounter = 0;
         for (int x = 0; x < 3; x++)
         {
             for (int y = 0; y < 3; y++)
             {
-                if(board[x, y] != 0) auxCounter++;
+                if(_board[x, y] != 0) auxCounter++;
             }
         }
         return auxCounter >= 9;
@@ -129,7 +150,7 @@ public class GameController : MonoBehaviour
     public void SetOnGameOver()
     {
         gamestate = Gamestate.GameOver;
-        Debug.Log("Player " + turn + " Won!");
+        Debug.Log("Tie");
         SetOnResetGame();
     }
 

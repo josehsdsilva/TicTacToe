@@ -1478,6 +1478,7 @@ GameObject:
   - component: {fileID: 789861567}
   - component: {fileID: 789861566}
   - component: {fileID: 789861565}
+  - component: {fileID: 789861568}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -1510,7 +1511,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cartesianRobotController: {fileID: 1893589718}
+  AIPlayer: {fileID: 789861568}
   turn: 1
+  humanPlayerTurn: 1
+  aiPlayerTurn: 2
 --- !u!4 &789861567
 Transform:
   m_ObjectHideFlags: 0
@@ -1525,6 +1529,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &789861568
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 789861564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b745ffbbc5d17a48aeb2e8b3903537f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &792271030
 GameObject:
   m_ObjectHideFlags: 0
@@ -3049,7 +3065,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f546005904d32f24da8967369dec1ab7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameController: {fileID: 789861566}
   arm: {fileID: 1526016445}
   top: {fileID: 734833560}
   balls: {fileID: 1414181524}
