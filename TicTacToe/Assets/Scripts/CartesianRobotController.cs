@@ -20,28 +20,27 @@ public class CartesianRobotController : MonoBehaviour
     float animationProgress = 0.0f;
     float animationDuration = 0.0f;
     int movementType;
-
-    private  float startX, startZ, currentX, currentZ;
-
-    bool[,] resetedCircles = new bool[2, 5];
-
-    // 0 -  
     // 1 -  Get Ball to Play
     // 2 -  Move to Drop on board space
     // 3 -  Get Ball to reset
     // 4 -  Drop Ball to reset
 
+    private  float startX, startZ, currentX, currentZ;
+
+    bool[,] resetedCircles = new bool[2, 5];
+
+    float spaceDistance = 1.1f;
     float scaleFactor = 5.4f;
 
     // Balls Information
     Vector3[,] ballsStartPosition;
-    int[] ballUsed;
+    int[] usedCircle;
     int selectedBall;
 
     // Initialization
     void Awake()
     {
-        ballUsed = new int[2];
+        usedCircle = new int[2];
         x = transform.position.x;
         z = transform.position.z;
         ballsStartPosition = new Vector3[2, 5];
@@ -58,19 +57,25 @@ public class CartesianRobotController : MonoBehaviour
     public void GetCircle()
     {
         movementType = 1;
-        movX = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].x - x;
-        movZ = ballsStartPosition[Global.instance.turn-1, ballUsed[Global.instance.turn-1]].z - z;
+        movX = ballsStartPosition[gameController.turn-1, usedCircle[gameController.turn-1]].x - x;
+        movZ = ballsStartPosition[gameController.turn-1, usedCircle[gameController.turn-1]].z - z;
         MoveZ();
     }
 
-    public void Move(int _x, int _y, Vector3 pos)
+    public void Move(int _x, int _y)
     {
+        Vector2 pos = GetSpacePosition(_x, _y);
         movementType = 2;
         spaceX = _x;
         spaceY = _y;
         movX = pos.x - x;
-        movZ = pos.z - z;
+        movZ = pos.y - z;
         MoveZ();
+    }
+
+    Vector2 GetSpacePosition(int _x, int _y)
+    {
+        return new Vector2(-1.1f + spaceDistance * _x, 1.1f - spaceDistance * _y);
     }
         
     public void UpdateResetedCircles()
@@ -108,7 +113,7 @@ public class CartesianRobotController : MonoBehaviour
 
         // Game Reseted
         Debug.Log("Reset");
-        gameController.SetOnGameSetup();
+        gameController.ResetFinished();
     }
 
     // Helpers
@@ -127,10 +132,10 @@ public class CartesianRobotController : MonoBehaviour
         return Mathf.Round(number * 100) * 0.01f;
     }
 
-    public void ResetBallUsed()
+    public void ResetUsedCircles()
     {
-        ballUsed[0] = 0;
-        ballUsed[1] = 0;
+        usedCircle[0] = 0;
+        usedCircle[1] = 0;
     }
 
     // Arm Movement
@@ -178,7 +183,7 @@ public class CartesianRobotController : MonoBehaviour
     {
         balls.transform.GetChild(selectedBall).transform.position = ballDropPoint.transform.position;
         balls.transform.GetChild(selectedBall).gameObject.SetActive(true);
-        if(movementType == 2) ballUsed[Global.instance.turn-1]++;
+        if(movementType == 2) usedCircle[gameController.turn-1]++;
         ScaleDownArm();
     }
 
@@ -220,7 +225,7 @@ public class CartesianRobotController : MonoBehaviour
                 {
                     if(movementType == 1)
                     {
-                        selectedBall = (Global.instance.turn-1) * 5 + ballUsed[Global.instance.turn-1];
+                        selectedBall = (gameController.turn-1) * 5 + usedCircle[gameController.turn-1];
                         CatchBall();
                     }
                     else if(movementType == 2 || movementType == 4)
@@ -241,7 +246,7 @@ public class CartesianRobotController : MonoBehaviour
                     }
                     else if(movementType == 2)
                     {
-                        Global.instance.EndOfTurn(spaceX, spaceY);
+                        gameController.EndOfTurn(spaceX, spaceY);
                         if(gameController.IsWin() == false)
                         {
                             if(gameController.IsGameOver() == false) gameController.SetOnGameSetup();
