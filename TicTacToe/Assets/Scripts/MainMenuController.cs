@@ -9,7 +9,8 @@ public class MainMenuController : MonoBehaviour
 
     void Start()
     {
-        PlayerPrefs.SetInt("difficulty", 0);
+        slider.value = Mathf.Sqrt(PlayerPrefs.GetInt("difficulty"));
+        
         slider.onValueChanged.AddListener((value) => {
             PlayerPrefs.SetInt("difficulty", (int)Mathf.Pow(value, 2));
         });
@@ -18,6 +19,15 @@ public class MainMenuController : MonoBehaviour
     public void GoToGame()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+    }
+
+    public void CloseGame()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 
 }

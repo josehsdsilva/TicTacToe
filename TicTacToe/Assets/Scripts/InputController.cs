@@ -16,6 +16,7 @@ public class InputController : MonoBehaviour
                 if(hit.transform.gameObject.layer == 6)
                 {
                     GameController.instance.Play(hit.transform.GetComponent<Space>().x, hit.transform.GetComponent<Space>().y);
+                    hit.transform.GetComponent<Space>().OnClick();
                 }
             }
         }

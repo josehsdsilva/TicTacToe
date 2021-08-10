@@ -81,7 +81,7 @@ public class GameController : MonoBehaviour
             gamestate = Gamestate.humanPlay;
             cartesianRobotController.Move(_x, _y);
         }
-        else Debug.Log("Invalid Play");
+        // else Debug.Log("Invalid Play");
     }
 
     // AI Play
@@ -93,7 +93,7 @@ public class GameController : MonoBehaviour
             gamestate = Gamestate.AIPlay;
             cartesianRobotController.Move(pos.x, pos.y);
         }
-        else Debug.Log("Invalid Play");
+        // else Debug.Log("Invalid Play");
     }
 
     // Turn
@@ -192,7 +192,7 @@ public class GameController : MonoBehaviour
             {
                 winMessages[1].gameObject.SetActive(true);
             }
-            if(turn == humanPlayerTurn)
+            else if(turn == humanPlayerTurn)
             {
                 winMessages[2].gameObject.SetActive(true);
             }
@@ -203,14 +203,12 @@ public class GameController : MonoBehaviour
     public void SetOnWin()
     {
         gamestate = Gamestate.Win;
-        Debug.Log("Player " + turn + " Won!");
         SetOnResetGame();
     }
 
     public void SetOnGameOver()
     {
         gamestate = Gamestate.GameOver;
-        Debug.Log("Tie");
         SetOnResetGame();
     }
 
@@ -235,6 +233,7 @@ public class GameController : MonoBehaviour
         cartesianRobotController.ResetUsedCircles();
         board = new int[3,3];
         turn = 1;
+        cartesianRobotController.ChangeMovementSpeed(true);
         cartesianRobotController.UpdateResetedCircles();
         cartesianRobotController.ResetCircles();
     }

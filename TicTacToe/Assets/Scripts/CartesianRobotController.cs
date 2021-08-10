@@ -5,6 +5,7 @@ using UnityEngine;
 public class CartesianRobotController : MonoBehaviour
 {
     public GameObject arm, top, balls, ballDropPoint;
+    public AudioSource movementSound;
 
     int spaceX, spaceY;
     float x = 1, z = 1, movX, movZ;
@@ -16,13 +17,10 @@ public class CartesianRobotController : MonoBehaviour
     float scaleFactor = 5.4f;
     
     // Animation Control
-    [Range(0.1f, 1f)]
-    [SerializeField] float defaultAnimDuration = 0.1f;
+    [SerializeField] float defaultAnimDuration = 0.2f;
 
     [HideInInspector] public int animationStatus = 0;
-    float animationElapsedTime = 0.0f;
-    float animationProgress = 0.0f;
-    float animationDuration = 0.0f;
+    float animationElapsedTime, animationProgress, animationDuration;
     int movementType;
     // 1 -  Get Ball to Play
     // 2 -  Move to Drop on board space
@@ -65,6 +63,8 @@ public class CartesianRobotController : MonoBehaviour
 
     public void Move(int _x, int _y)
     {
+        ChangeMovementSpeed(false);
+        movementSound.volume = 0.2f;
         Vector2 pos = GetSpacePosition(_x, _y);
         movementType = 2;
         spaceX = _x;
@@ -93,6 +93,7 @@ public class CartesianRobotController : MonoBehaviour
 
     public void ResetCircles()
     {
+        movementSound.volume = 0f;
         animationStatus = 0;
 
         for (int player = 0; player < 2; player++)
@@ -113,6 +114,7 @@ public class CartesianRobotController : MonoBehaviour
         }
 
         // Game Reseted
+        ChangeMovementSpeed(false);
         GameController.instance.ResetFinished();
     }
 
@@ -146,6 +148,7 @@ public class CartesianRobotController : MonoBehaviour
         animationElapsedTime = 0;
         animationProgress = 0;
         animationDuration = defaultAnimDuration * Mathf.Abs(movZ);
+        movementSound.Play();
     }
 
     void MoveX()
@@ -199,6 +202,12 @@ public class CartesianRobotController : MonoBehaviour
         MoveZ();
     }
 
+    public void ChangeMovementSpeed(bool reset)
+    {
+        if(reset == true) defaultAnimDuration = 0.05f;
+        else defaultAnimDuration = 0.2f;
+    }
+
     // Update
     void FixedUpdate()
     {
@@ -239,6 +248,7 @@ public class CartesianRobotController : MonoBehaviour
                 }
                 else if(animationStatus == 5) // ScaleDownArm
                 {
+                    movementSound.Stop();
                     if(movementType == 1)
                     {
                         animationStatus = 0;
