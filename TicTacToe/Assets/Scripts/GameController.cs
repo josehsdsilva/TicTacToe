@@ -36,7 +36,7 @@ public class GameController : MonoBehaviour
     
     public CartesianRobotController cartesianRobotController;
     public AI AIPlayer;
-    Gamestate gamestate;
+    public Gamestate gamestate;
 
     [SerializeField] Image currentTurnImage, humanTurnImage;
 
@@ -76,12 +76,13 @@ public class GameController : MonoBehaviour
     // Human Play
     public void Play(int _x, int _y)
     {
-        if(gamestate == Gamestate.idle && board[_x, _y] == 0 && cartesianRobotController.animationStatus == 0 && turn == humanPlayerTurn)
-        {
-            gamestate = Gamestate.humanPlay;
-            cartesianRobotController.Move(_x, _y);
-        }
-        // else Debug.Log("Invalid Play");
+        gamestate = Gamestate.humanPlay;
+        cartesianRobotController.Move(_x, _y);
+    }
+
+    public bool IsValidMove(int _x, int _y)
+    {
+        return gamestate == Gamestate.idle && board[_x, _y] == 0 && cartesianRobotController.animationStatus == 0 && turn == humanPlayerTurn;
     }
 
     // AI Play

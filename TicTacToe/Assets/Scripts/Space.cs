@@ -6,10 +6,8 @@ public class Space : MonoBehaviour
 {
     public int x, y;
 
-    public int animationStatus = 0;
+    int animationStatus = 0;
     float animationElapsedTime, animationProgress, animationDuration, defaultAnimDuration = 0.1f;
-
-    Color animColor = new Color(255, 0, 0, 127);
 
     Color startingAnimColor;
 
@@ -23,9 +21,10 @@ public class Space : MonoBehaviour
         transform.name = x + ", " + y;
     }
 
-    public void OnClick()
+    public void OnClick(bool valid)
     {
-        animationStatus = 1;
+        if(valid) animationStatus = 1;
+        else animationStatus = 2;
         animationElapsedTime = 0;
         animationProgress = 0;
         animationDuration = defaultAnimDuration;
@@ -39,13 +38,14 @@ public class Space : MonoBehaviour
             animationProgress = animationElapsedTime / animationDuration;
             if(animationProgress >= 1)
             {
-                if(animationStatus == 1)
+                if(animationStatus == 1 || animationStatus == 2)
                 {
                     animationStatus = 0;
                     gameObject.GetComponent<MeshRenderer>().material.color = startingAnimColor;
                 }
             }
-            else if(animationStatus == 1) gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.25f * Mathf.Sin(Mathf.PI * animationProgress));
+            else if(animationStatus == 1) gameObject.GetComponent<MeshRenderer>().material.color = new Color(0, 1, 0, 0.25f * Mathf.Sin(Mathf.PI * animationProgress));
+            else if(animationStatus == 2) gameObject.GetComponent<MeshRenderer>().material.color = new Color(1, 0, 0, 0.25f * Mathf.Sin(Mathf.PI * animationProgress));
         }
     }
 }

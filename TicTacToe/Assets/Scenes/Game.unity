@@ -857,7 +857,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 1
   y: 2
-  animationStatus: 0
 --- !u!1001 &397210737
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1273,7 +1272,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 1
   y: 0
-  animationStatus: 0
 --- !u!1 &525077712
 GameObject:
   m_ObjectHideFlags: 0
@@ -1384,7 +1382,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 0
   y: 1
-  animationStatus: 0
 --- !u!1 &532726130
 GameObject:
   m_ObjectHideFlags: 0
@@ -1570,7 +1567,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 0
   y: 2
-  animationStatus: 0
 --- !u!4 &632037091 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1902196850805242147, guid: 36f3bd96923efd546837a3a7bed5c774, type: 3}
@@ -1686,7 +1682,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 0
   y: 0
-  animationStatus: 0
 --- !u!1 &711077883
 GameObject:
   m_ObjectHideFlags: 0
@@ -1983,7 +1978,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 1
   y: 1
-  animationStatus: 0
 --- !u!1 &789861564
 GameObject:
   m_ObjectHideFlags: 0
@@ -2030,6 +2024,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cartesianRobotController: {fileID: 1893589718}
   AIPlayer: {fileID: 789861568}
+  gamestate: 0
   currentTurnImage: {fileID: 862980493}
   humanTurnImage: {fileID: 532726132}
   turn: 1
@@ -2602,7 +2597,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 2
   y: 2
-  animationStatus: 0
 --- !u!1001 &952050392
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3065,7 +3059,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 2
   y: 0
-  animationStatus: 0
 --- !u!1 &1213086461
 GameObject:
   m_ObjectHideFlags: 0
@@ -3366,7 +3359,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 2
   y: 1
-  animationStatus: 0
 --- !u!1 &1405658334
 GameObject:
   m_ObjectHideFlags: 0

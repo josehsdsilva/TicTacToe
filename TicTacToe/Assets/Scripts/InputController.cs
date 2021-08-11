@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
+    int x, y;
     void Update()
     {
         if( Input.GetMouseButtonDown(0) )
@@ -15,8 +16,14 @@ public class InputController : MonoBehaviour
             {
                 if(hit.transform.gameObject.layer == 6)
                 {
-                    GameController.instance.Play(hit.transform.GetComponent<Space>().x, hit.transform.GetComponent<Space>().y);
-                    hit.transform.GetComponent<Space>().OnClick();
+                    x = hit.transform.GetComponent<Space>().x;
+                    y = hit.transform.GetComponent<Space>().y;
+                    if(GameController.instance.IsValidMove(x, y))
+                    {
+                        GameController.instance.Play(x, y);
+                        hit.transform.GetComponent<Space>().OnClick(true);
+                    }
+                    else hit.transform.GetComponent<Space>().OnClick(false);
                 }
             }
         }
